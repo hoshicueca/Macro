@@ -1,1 +1,237 @@
-/* style.css missing */
+/* ====== Variáveis de Tema ====== */
+:root {
+  --bg: #fff9fe;
+  --card: #fff;
+  --accent: #7b3bd8;
+  --accent-2: #9b59ff;
+  --muted: #6b6b6b;
+  --radius: 16px;
+  --shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* ====== Reset ====== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--muted);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ====== Cabeçalho ====== */
+header {
+  text-align: center;
+  margin: 2rem 0 1rem;
+  transition: color 0.4s ease;
+}
+
+#logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  transition: color 0.4s ease;
+}
+
+#title {
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+#subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+  opacity: 0.8;
+  margin-top: 0.3rem;
+}
+
+/* ====== Painel de Automatização ====== */
+#panel {
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  width: 95%;
+  max-width: 650px;
+  margin-bottom: 1.5rem;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+#panelTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+input:focus {
+  border-color: var(--accent);
+}
+
+#resetNames {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#resetNames:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+/* ====== Switch do Tema ====== */
+.switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem;
+  gap: 0.5rem;
+}
+
+.switch-container label {
+  font-size: 0.9rem;
+}
+
+#themeSwitch {
+  width: 50px;
+  height: 26px;
+  appearance: none;
+  background: var(--accent);
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#themeSwitch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+#themeSwitch:checked {
+  background: var(--accent-2);
+}
+
+#themeSwitch:checked::before {
+  transform: translateX(24px);
+}
+
+/* ====== Cards de Macros ====== */
+#cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+  width: 95%;
+  max-width: 900px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+
+pre.macro {
+  background: #f9f9fb;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #333;
+  margin-bottom: 0.8rem;
+}
+
+/* ====== Botões ====== */
+.btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+.note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.4rem;
+  opacity: 0.7;
+}
+
+/* ====== Rodapé ====== */
+footer {
+  margin-top: 2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  opacity: 0.8;
+  text-align: center;
+  padding-bottom: 2rem;
+  transition: color 0.4s ease;
+}
+
+/* ====== Responsividade ====== */
+@media (max-width: 600px) {
+  #panel, #cards {
+    width: 90%;
+  }
+  .card {
+    padding: 0.9rem;
+  }
+}
