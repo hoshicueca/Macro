@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Macros — Beleza Brasileira</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     :root{
       --bg:#fff9fe;
@@ -29,6 +28,7 @@
     pre.macro{ background:linear-gradient(180deg, rgba(123,59,216,0.03), rgba(123,59,216,0.01)); padding:10px;border-radius:10px;white-space:pre-wrap;word-break:break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:13px;color:#111;margin:0;border:1px dashed rgba(123,59,216,0.08); line-height:1.4; }
     .meta{display:flex;gap:8px;align-items:center;margin-top:10px}
     .btn{ background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;border:0;cursor:pointer; font-weight:600;font-size:13px;box-shadow:0 8px 20px rgba(123,59,216,0.12); transition:background 0.4s ease; }
+    .btn:hover{ filter:brightness(1.05); }
     .note{color:var(--muted);font-size:13px}
 
     /* Painel de automação */
@@ -164,37 +164,17 @@ Seguimos à disposição para o que precisar! 😉</pre>
     const originalTemplates = {}; // id -> template com placeholders (base: Beleza Brasileira)
     let isHidratei = false; // false = Beleza Brasileira; true = Hidratei
 
-    // emoji maps
-    const emojiMap = {
-      bb_to_h: { '💜': '💙', '🔥': '💧' },
-      h_to_bb: { '💙': '💜', '💧': '🔥' }
-    };
+    // placeholders inputs (serão preenchidos na attachInputs)
+    const fields = { nome:null, codigo:null, link:null, data:null };
 
-    // placeholders inputs
-    const fields = {
-      nome: document.getElementById('nomeInput'),
-      codigo: document.getElementById('codigoInput'),
-      link: document.getElementById('linkInput'),
-      data: document.getElementById('dataInput')
-    };
-
-    // assign ids to macros and capture original template
-    function initTemplates() {
-      document.querySelectorAll('pre.macro').forEach((pre, idx) => {
-        if (!pre.id) pre.id = 'macro-' + idx + '-' + Math.random().toString(36).slice(2,8);
-        // store as base template only once
-        if (!originalTemplates[pre.id]) originalTemplates[pre.id] = pre.innerText;
-      });
-    }
-
-    // apply placeholder replacements to a template
+    // aplica placeholders
     function fillPlaceholders(template) {
       let text = template;
-      const nome = fields.nome.value.trim();
-      const codigo = fields.codigo.value.trim();
-      const link = fields.link.value.trim();
-      const data = fields.data.value.trim();
-      if (nome) text = text.replace(/
+      const nome = fields.nome?.value.trim() || '';
+      const codigo = fields.codigo?.value.trim() || '';
+      const link = fields.link?.value.trim() || '';
+      const data = fields.data?.value.trim() || '';
+      if (nome)  text = text.replace(/
 
 \[Nome da cliente\]
 
@@ -208,12 +188,12 @@ Seguimos à disposição para o que precisar! 😉</pre>
 \[CÓDIGO_DE_RASTREIO\]
 
 /gi, codigo);
-      if (link) text = text.replace(/
+      if (link)  text = text.replace(/
 
 \[LINK_DE_RASTREIO\]
 
 /gi, link);
-      if (data) text = text.replace(/
+      if (data)  text = text.replace(/
 
 \[DATA_PREVISTA\]
 
@@ -221,70 +201,91 @@ Seguimos à disposição para o que precisar! 😉</pre>
       return text;
     }
 
-    // apply emoji mapping to text according to current theme
+    // mapeia emojis conforme tema
     function applyEmojiMapping(text) {
-      if (isHidratei) {
-        return text.replace(/💜/g, '💙').replace(/🔥/g, '💧');
-      } else {
-        return text.replace(/💙/g, '💜').replace(/💧/g, '🔥');
-      }
+      return isHidratei
+        ? text.replace(/💜/g, '💙').replace(/🔥/g, '💧')
+        : text.replace(/💙/g, '💜').replace(/💧/g, '🔥');
     }
 
-    // render all macros based on original template + placeholders + emoji map
+    // captura templates originais
+    function initTemplates() {
+      document.querySelectorAll('pre.macro').forEach((pre, idx) => {
+        if (!pre.id) pre.id = 'macro-' + idx + '-' + Math.random().toString(36).slice(2,8);
+        if (!originalTemplates[pre.id]) originalTemplates[pre.id] = pre.innerText;
+      });
+    }
+
+    // renderiza tudo
     function renderAllMacros() {
       document.querySelectorAll('pre.macro').forEach(pre => {
         const template = originalTemplates[pre.id] ?? pre.innerText;
         const filled = fillPlaceholders(template);
         pre.innerText = applyEmojiMapping(filled);
       });
-      // also update card titles, buttons, footer and panel
       document.querySelectorAll('.card h2').forEach(h => {
         h.innerHTML = applyEmojiMapping(h.textContent);
       });
       document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
         btn.innerHTML = applyEmojiMapping(btn.textContent);
       });
-      document.getElementById('footer').innerText = applyEmojiMapping(document.getElementById('footer').textContent);
-      document.getElementById('panelTitle').innerText = applyEmojiMapping(document.getElementById('panelTitle').textContent);
-      document.getElementById('subtitle').innerText = isHidratei ? 'Mensagens automáticas com tom leve e refrescante 💙💧' : 'Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥';
+      const footer = document.getElementById('footer');
+      if (footer) footer.innerText = applyEmojiMapping(footer.textContent);
+      const panelTitle = document.getElementById('panelTitle');
+      if (panelTitle) panelTitle.innerText = applyEmojiMapping(panelTitle.textContent);
+      const subtitle = document.getElementById('subtitle');
+      if (subtitle) subtitle.innerText = isHidratei
+        ? 'Mensagens automáticas com tom leve e refrescante 💙💧'
+        : 'Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥';
     }
 
-    // copy handler - copies the macro text related to the clicked button
+    // copia texto da macro
     function attachCopyHandlers() {
       document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
-        // remove existing listener to avoid duplicates
-        btn.replaceWith(btn.cloneNode(true));
-      });
-      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          // find closest card and the macro inside it
+        btn.onclick = null;
+        btn.addEventListener('click', () => {
           const card = btn.closest('.card');
-          if (!card) return;
-          const pre = card.querySelector('pre.macro');
+          const pre = card?.querySelector('pre.macro');
           if (!pre) return;
-          navigator.clipboard.writeText(pre.innerText).then(()=>{
-            const old = btn.innerText;
+          navigator.clipboard.writeText(pre.innerText).then(() => {
+            const original = btn.innerText;
             btn.innerText = 'Copiado ✅';
-            setTimeout(()=>{ renderAllMacros(); }, 900);
-          }).catch(()=>{
-            alert('Erro ao copiar — permita acesso à área de transferência.');
+            setTimeout(() => { btn.innerText = original; }, 1000);
+          }).catch(() => {
+            const range = document.createRange();
+            range.selectNodeContents(pre);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            try {
+              document.execCommand('copy');
+              sel.removeAllRanges();
+              const original = btn.innerText;
+              btn.innerText = 'Copiado ✅';
+              setTimeout(() => { btn.innerText = original; }, 1000);
+            } catch {
+              alert('Erro ao copiar — tente em ambiente seguro (HTTPS) ou permita acesso.');
+            }
           });
         });
       });
     }
 
-    // theme toggle
-    const themeSwitch = document.getElementById('themeSwitch');
-    themeSwitch.addEventListener('change', () => {
-      isHidratei = themeSwitch.checked;
-      applyTheme();
-    });
+    // toggle de tema
+    function attachThemeToggle() {
+      const themeSwitch = document.getElementById('themeSwitch');
+      if (!themeSwitch) return;
+      themeSwitch.onchange = null;
+      themeSwitch.addEventListener('change', () => {
+        isHidratei = themeSwitch.checked;
+        applyTheme();
+      });
+    }
 
     function applyTheme() {
       const root = document.documentElement;
       const logo = document.getElementById('logo');
       const title = document.getElementById('title');
-      const subtitle = document.getElementById('subtitle');
       const footer = document.getElementById('footer');
       const panelTitle = document.getElementById('panelTitle');
 
@@ -296,10 +297,10 @@ Seguimos à disposição para o que precisar! 😉</pre>
         root.style.setProperty('--muted','#444');
         document.body.style.background = 'linear-gradient(180deg, rgba(33,150,243,0.08), rgba(25,118,210,0.03))';
 
-        logo.innerText = 'H';
-        title.innerText = 'Macros — Hidratei';
-        footer.innerText = 'Macros Hidratei — use com carinho 💙💧';
-        panelTitle.innerText = 'Automatizar campos 💙';
+        if (logo) logo.innerText = 'H';
+        if (title) title.innerText = 'Macros — Hidratei';
+        if (footer) footer.innerText = 'Macros Hidratei — use com carinho 💙💧';
+        if (panelTitle) panelTitle.innerText = 'Automatizar campos 💙';
       } else {
         root.style.setProperty('--bg','#fff9fe');
         root.style.setProperty('--card','#fff');
@@ -308,39 +309,55 @@ Seguimos à disposição para o que precisar! 😉</pre>
         root.style.setProperty('--muted','#6b6b6b');
         document.body.style.background = 'linear-gradient(180deg, rgba(123,59,216,0.06), rgba(155,89,255,0.02))';
 
-        logo.innerText = 'BB';
-        title.innerText = 'Macros — Beleza Brasileira';
-        footer.innerText = 'Macros geradas automaticamente — adapte conforme necessidade. 💜🔥';
-        panelTitle.innerText = 'Automatizar campos 💜';
+        if (logo) logo.innerText = 'BB';
+        if (title) title.innerText = 'Macros — Beleza Brasileira';
+        if (footer) footer.innerText = 'Macros geradas automaticamente — adapte conforme necessidade. 💜🔥';
+        if (panelTitle) panelTitle.innerText = 'Automatizar campos 💜';
       }
       renderAllMacros();
       attachCopyHandlers();
     }
 
     // inputs -> rerender
-    Object.values(fields).forEach(input => {
-      input.addEventListener('input', () => {
-        renderAllMacros();
+    function attachInputs() {
+      fields.nome   = document.getElementById('nomeInput');
+      fields.codigo = document.getElementById('codigoInput');
+      fields.link   = document.getElementById('linkInput');
+      fields.data   = document.getElementById('dataInput');
+
+      Object.values(fields).forEach(input => {
+        if (!input) return;
+        input.addEventListener('input', renderAllMacros);
       });
-    });
 
-    // reset button
-    document.getElementById('resetNames').addEventListener('click', () => {
-      Object.values(fields).forEach(i => i.value = '');
-      renderAllMacros();
-    });
+      const resetBtn = document.getElementById('resetNames');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          Object.values(fields).forEach(i => { if (i) i.value = ''; });
+          renderAllMacros();
+        });
+      }
+    }
 
-    // initialize everything on load
-    window.addEventListener('DOMContentLoaded', () => {
-      initTemplates();
+    // init robusto
+    function initAll() {
       if (!document.getElementById('panelTitle')) {
         const h4 = document.createElement('h4');
         h4.id = 'panelTitle';
         h4.innerText = 'Automatizar campos 💜';
-        document.getElementById('auto-panel').prepend(h4);
+        document.getElementById('auto-panel')?.prepend(h4);
       }
-      applyTheme(); // renders macros and attach handlers
-    });
+      initTemplates();
+      attachInputs();
+      attachThemeToggle();
+      applyTheme();
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
   </script>
 </body>
 </html>
