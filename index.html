@@ -1,1 +1,71 @@
-<!-- index.html missing -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Macros — Beleza Brasileira</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="logo" id="logo">BB</div>
+        <div>
+          <h1 id="title">Macros — Beleza Brasileira</h1>
+          <p class="lead" id="subtitle">Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥</p>
+        </div>
+      </div>
+      <div class="theme-toggle">
+        💜
+        <label class="switch">
+          <input type="checkbox" id="themeSwitch">
+          <span class="slider"></span>
+        </label>
+        💙
+      </div>
+    </header>
+
+    <main>
+      <div class="cards" id="cards">
+        <section class="card">
+          <h2>Pedido em Andamento 💜</h2>
+          <pre class="macro">Ei [Nome da cliente], tudo bem? 💜
+            
+Me desculpe pela demora no retorno 🙏
+
+Tivemos um erro no nosso sistema interno e o atendimento acabou ficando sobrecarregado.
+Seu pedido já está em andamento! 🚚✨
+
+📦 Código de rastreio: **[CÓDIGO_DE_RASTREIO]**
+🔎 Acompanhe por aqui: [LINK_DE_RASTREIO]
+
+Previsão de entrega: **[DATA_PREVISTA]** 
+
+Obrigada pela paciência — estou à disposição para o que precisar! 💜🔥</pre>
+          <div class="meta">
+            <button class="btn" data-action="copy">💜 Copiar</button>
+            <div class="note">Use para pedidos em rota ou já enviados.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer id="footer">Macros geradas automaticamente — adapte conforme necessidade. 💜🔥</footer>
+  </div>
+
+  <div id="auto-panel">
+    <h4 id="panelTitle">Automatizar campos 💜</h4>
+    <label for="nomeInput">Nome da cliente:</label>
+    <input type="text" id="nomeInput" placeholder="Ex: Juliana">
+    <label for="codigoInput">Código de rastreio:</label>
+    <input type="text" id="codigoInput" placeholder="Ex: LX123456789BR">
+    <label for="linkInput">Link de rastreio:</label>
+    <input type="text" id="linkInput" placeholder="Ex: https://...">
+    <label for="dataInput">Data prevista:</label>
+    <input type="text" id="dataInput" placeholder="Ex: 05/11/2025">
+    <button id="resetNames">Restaurar textos</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
