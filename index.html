@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Macros — Beleza Brasileira</title>
+  <title>Macros — Beleza Brasileira / Hidratei</title>
   <style>
     :root{
       --bg:#fff9fe;
@@ -30,14 +30,11 @@
     .btn{ background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;border:0;cursor:pointer; font-weight:600;font-size:13px;box-shadow:0 8px 20px rgba(123,59,216,0.12); transition:background 0.4s ease; }
     .btn:hover{ filter:brightness(1.05); }
     .note{color:var(--muted);font-size:13px}
-
-    /* Painel de automação */
-    #auto-panel{ position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 1px solid rgba(123,59,216,0.15); border-radius: 14px; box-shadow: 0 6px 24px rgba(123,59,216,0.18); padding: 14px; z-index: 9999; width: 280px; transition:all 0.4s ease; }
+    #auto-panel{ position: sticky; top: 20px; background: var(--card); border: 1px solid rgba(123,59,216,0.15); border-radius: 14px; box-shadow: 0 6px 24px rgba(123,59,216,0.18); padding: 14px; width: 100%; transition:all 0.4s ease; }
     #auto-panel h4{ margin:0 0 8px 0; color:var(--accent); font-size:14px; }
     #auto-panel label{ font-size:13px; color:var(--muted); display:block; margin-top:8px;}
     #auto-panel input{ width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid rgba(123,59,216,0.3); font-size:14px; }
     #auto-panel button{ margin-top:10px;width:100%;padding:8px;border-radius:8px;border:none; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(123,59,216,0.25); }
-
     .theme-toggle { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); }
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
     .switch input {opacity: 0;width: 0;height: 0;}
@@ -60,7 +57,7 @@
       <div class="theme-toggle">
         💜
         <label class="switch">
-          <input type="checkbox" id="themeSwitch">
+          <input type="checkbox" id="themeSwitch" />
           <span class="slider"></span>
         </label>
         💙
@@ -69,7 +66,6 @@
 
     <main>
       <div class="cards" id="cards">
-
         <!-- Macro 1 -->
         <section class="card">
           <h2>Pedido em Andamento 💜</h2>
@@ -138,43 +134,50 @@ Seguimos à disposição para o que precisar! 😉</pre>
             <div class="note">Use para pedidos com entrega via Loggi.</div>
           </div>
         </section>
-
       </div>
+
+      <!-- Painel de automação -->
+      <aside id="auto-panel">
+        <h4 id="panelTitle">Automatizar campos 💜</h4>
+        <label for="nomeInput">Nome da cliente:</label>
+        <input type="text" id="nomeInput" placeholder="Ex: Juliana">
+        <label for="codigoInput">Código de rastreio:</label>
+        <input type="text" id="codigoInput" placeholder="Ex: LX123456789BR">
+        <label for="linkInput">Link de rastreio:</label>
+        <input type="text" id="linkInput" placeholder="Ex: https://...">
+        <label for="dataInput">Data prevista:</label>
+        <input type="text" id="dataInput" placeholder="Ex: 05/11/2025">
+        <button id="resetNames">Restaurar textos</button>
+      </aside>
     </main>
 
     <footer id="footer">Macros geradas automaticamente — adapte conforme necessidade. 💜🔥</footer>
   </div>
 
-  <!-- Painel de automação -->
-  <div id="auto-panel">
-    <h4 id="panelTitle">Automatizar campos 💜</h4>
-    <label for="nomeInput">Nome da cliente:</label>
-    <input type="text" id="nomeInput" placeholder="Ex: Juliana">
-    <label for="codigoInput">Código de rastreio:</label>
-    <input type="text" id="codigoInput" placeholder="Ex: LX123456789BR">
-    <label for="linkInput">Link de rastreio:</label>
-    <input type="text" id="linkInput" placeholder="Ex: https://...">
-    <label for="dataInput">Data prevista:</label>
-    <input type="text" id="dataInput" placeholder="Ex: 05/11/2025">
-    <button id="resetNames">Restaurar textos</button>
-  </div>
-
   <script>
-    // --- estado e templates ---
-    const originalTemplates = {}; // id -> template com placeholders (base: Beleza Brasileira)
-    let isHidratei = false; // false = Beleza Brasileira; true = Hidratei
+    (function(){
+      const originalTemplates = {}; // id -> template original
+      let isHidratei = false;
 
-    // placeholders inputs (serão preenchidos na attachInputs)
-    const fields = { nome:null, codigo:null, link:null, data:null };
+      const fields = {
+        nome: null, codigo: null, link: null, data: null
+      };
 
-    // aplica placeholders
-    function fillPlaceholders(template) {
-      let text = template;
-      const nome = fields.nome?.value.trim() || '';
-      const codigo = fields.codigo?.value.trim() || '';
-      const link = fields.link?.value.trim() || '';
-      const data = fields.data?.value.trim() || '';
-      if (nome)  text = text.replace(/
+      // Util: mapeia emojis conforme tema
+      function mapEmojis(text){
+        return isHidratei
+          ? text.replace(/💜/g,'💙').replace(/🔥/g,'💧')
+          : text.replace(/💙/g,'💜').replace(/💧/g,'🔥');
+      }
+
+      // Util: aplica placeholders
+      function applyPlaceholders(t){
+        const nome   = fields.nome?.value.trim()   || '';
+        const codigo = fields.codigo?.value.trim() || '';
+        const link   = fields.link?.value.trim()   || '';
+        const data   = fields.data?.value.trim()   || '';
+        let out = t;
+        if (nome)   out = out.replace(/
 
 \[Nome da cliente\]
 
@@ -183,181 +186,179 @@ Seguimos à disposição para o que precisar! 😉</pre>
 \[Nome\]
 
 /gi, nome);
-      if (codigo) text = text.replace(/
+        if (codigo) out = out.replace(/
 
 \[CÓDIGO_DE_RASTREIO\]
 
 /gi, codigo);
-      if (link)  text = text.replace(/
+        if (link)   out = out.replace(/
 
 \[LINK_DE_RASTREIO\]
 
 /gi, link);
-      if (data)  text = text.replace(/
+        if (data)   out = out.replace(/
 
 \[DATA_PREVISTA\]
 
 /gi, data);
-      return text;
-    }
+        return out;
+      }
 
-    // mapeia emojis conforme tema
-    function applyEmojiMapping(text) {
-      return isHidratei
-        ? text.replace(/💜/g, '💙').replace(/🔥/g, '💧')
-        : text.replace(/💙/g, '💜').replace(/💧/g, '🔥');
-    }
+      // Inicializa templates originais (executar 1x)
+      function initTemplates(){
+        document.querySelectorAll('pre.macro').forEach((pre, idx)=>{
+          if (!pre.id) pre.id = 'macro-' + idx;
+          if (!originalTemplates[pre.id]) originalTemplates[pre.id] = pre.innerText;
+        });
+      }
 
-    // captura templates originais
-    function initTemplates() {
-      document.querySelectorAll('pre.macro').forEach((pre, idx) => {
-        if (!pre.id) pre.id = 'macro-' + idx + '-' + Math.random().toString(36).slice(2,8);
-        if (!originalTemplates[pre.id]) originalTemplates[pre.id] = pre.innerText;
-      });
-    }
+      // Renderiza macros e textos auxiliares
+      function render(){
+        document.querySelectorAll('pre.macro').forEach(pre=>{
+          const base = originalTemplates[pre.id] ?? pre.innerText;
+          const hydrated = mapEmojis(applyPlaceholders(base));
+          pre.innerText = hydrated;
+        });
+        document.querySelectorAll('.card h2').forEach(h=>{
+          h.innerHTML = mapEmojis(h.textContent);
+        });
+        document.querySelectorAll('.btn[data-action="copy"]').forEach(btn=>{
+          btn.innerHTML = mapEmojis(btn.textContent);
+        });
+        const footer = document.getElementById('footer');
+        if (footer) footer.innerText = mapEmojis(footer.textContent);
+        const panelTitle = document.getElementById('panelTitle');
+        if (panelTitle) panelTitle.innerText = mapEmojis(panelTitle.textContent);
+        const subtitle = document.getElementById('subtitle');
+        if (subtitle) {
+          subtitle.innerText = isHidratei
+            ? 'Mensagens automáticas com tom leve e refrescante 💙💧'
+            : 'Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥';
+        }
+      }
 
-    // renderiza tudo
-    function renderAllMacros() {
-      document.querySelectorAll('pre.macro').forEach(pre => {
-        const template = originalTemplates[pre.id] ?? pre.innerText;
-        const filled = fillPlaceholders(template);
-        pre.innerText = applyEmojiMapping(filled);
-      });
-      document.querySelectorAll('.card h2').forEach(h => {
-        h.innerHTML = applyEmojiMapping(h.textContent);
-      });
-      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
-        btn.innerHTML = applyEmojiMapping(btn.textContent);
-      });
-      const footer = document.getElementById('footer');
-      if (footer) footer.innerText = applyEmojiMapping(footer.textContent);
-      const panelTitle = document.getElementById('panelTitle');
-      if (panelTitle) panelTitle.innerText = applyEmojiMapping(panelTitle.textContent);
-      const subtitle = document.getElementById('subtitle');
-      if (subtitle) subtitle.innerText = isHidratei
-        ? 'Mensagens automáticas com tom leve e refrescante 💙💧'
-        : 'Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥';
-    }
+      // Aplica tema visual
+      function applyTheme(){
+        const root = document.documentElement;
+        const logo = document.getElementById('logo');
+        const title = document.getElementById('title');
+        const footer = document.getElementById('footer');
+        const panelTitle = document.getElementById('panelTitle');
 
-    // copia texto da macro
-    function attachCopyHandlers() {
-      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
-        btn.onclick = null;
-        btn.addEventListener('click', () => {
+        if (isHidratei) {
+          root.style.setProperty('--bg','#f0f8ff');
+          root.style.setProperty('--card','#ffffff');
+          root.style.setProperty('--accent','#2196f3');
+          root.style.setProperty('--accent-2','#1976d2');
+          root.style.setProperty('--muted','#444');
+          document.body.style.background = 'linear-gradient(180deg, rgba(33,150,243,0.08), rgba(25,118,210,0.03))';
+          if (logo) logo.innerText = 'H';
+          if (title) title.innerText = 'Macros — Hidratei';
+          if (footer) footer.innerText = 'Macros Hidratei — use com carinho 💙💧';
+          if (panelTitle) panelTitle.innerText = 'Automatizar campos 💙';
+        } else {
+          root.style.setProperty('--bg','#fff9fe');
+          root.style.setProperty('--card','#fff');
+          root.style.setProperty('--accent','#7b3bd8');
+          root.style.setProperty('--accent-2','#9b59ff');
+          root.style.setProperty('--muted','#6b6b6b');
+          document.body.style.background = 'linear-gradient(180deg, rgba(123,59,216,0.06), rgba(155,89,255,0.02))';
+          if (logo) logo.innerText = 'BB';
+          if (title) title.innerText = 'Macros — Beleza Brasileira';
+          if (footer) footer.innerText = 'Macros geradas automaticamente — adapte conforme necessidade. 💜🔥';
+          if (panelTitle) panelTitle.innerText = 'Automatizar campos 💜';
+        }
+        render();
+      }
+
+      // Event delegation para copiar (robusto)
+      function setupCopyDelegation(){
+        document.addEventListener('click', (ev)=>{
+          const btn = ev.target.closest('.btn[data-action="copy"]');
+          if (!btn) return;
           const card = btn.closest('.card');
           const pre = card?.querySelector('pre.macro');
           if (!pre) return;
-          navigator.clipboard.writeText(pre.innerText).then(() => {
+
+          // tenta copiar via clipboard; fallback para execCommand
+          const toCopy = pre.innerText;
+          const giveFeedback = ()=>{
             const original = btn.innerText;
             btn.innerText = 'Copiado ✅';
-            setTimeout(() => { btn.innerText = original; }, 1000);
-          }).catch(() => {
-            const range = document.createRange();
-            range.selectNodeContents(pre);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            try {
-              document.execCommand('copy');
-              sel.removeAllRanges();
-              const original = btn.innerText;
-              btn.innerText = 'Copiado ✅';
-              setTimeout(() => { btn.innerText = original; }, 1000);
-            } catch {
-              alert('Erro ao copiar — tente em ambiente seguro (HTTPS) ou permita acesso.');
-            }
+            setTimeout(()=>{ btn.innerText = original; }, 1000);
+          };
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(toCopy).then(giveFeedback).catch(()=>{
+              fallbackCopy(pre, giveFeedback);
+            });
+          } else {
+            fallbackCopy(pre, giveFeedback);
+          }
+        });
+      }
+
+      function fallbackCopy(node, done){
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try {
+          document.execCommand('copy');
+          sel.removeAllRanges();
+          done();
+        } catch {
+          alert('Erro ao copiar — use HTTPS (GitHub Pages) ou permita acesso.');
+        }
+      }
+
+      // Inputs e reset
+      function setupInputs(){
+        fields.nome   = document.getElementById('nomeInput');
+        fields.codigo = document.getElementById('codigoInput');
+        fields.link   = document.getElementById('linkInput');
+        fields.data   = document.getElementById('dataInput');
+
+        ['input','change'].forEach(evt=>{
+          Object.values(fields).forEach(inp=>{
+            if (inp) inp.addEventListener(evt, render);
           });
         });
-      });
-    }
 
-    // toggle de tema
-    function attachThemeToggle() {
-      const themeSwitch = document.getElementById('themeSwitch');
-      if (!themeSwitch) return;
-      themeSwitch.onchange = null;
-      themeSwitch.addEventListener('change', () => {
-        isHidratei = themeSwitch.checked;
-        applyTheme();
-      });
-    }
-
-    function applyTheme() {
-      const root = document.documentElement;
-      const logo = document.getElementById('logo');
-      const title = document.getElementById('title');
-      const footer = document.getElementById('footer');
-      const panelTitle = document.getElementById('panelTitle');
-
-      if (isHidratei) {
-        root.style.setProperty('--bg','#f0f8ff');
-        root.style.setProperty('--card','#ffffff');
-        root.style.setProperty('--accent','#2196f3');
-        root.style.setProperty('--accent-2','#1976d2');
-        root.style.setProperty('--muted','#444');
-        document.body.style.background = 'linear-gradient(180deg, rgba(33,150,243,0.08), rgba(25,118,210,0.03))';
-
-        if (logo) logo.innerText = 'H';
-        if (title) title.innerText = 'Macros — Hidratei';
-        if (footer) footer.innerText = 'Macros Hidratei — use com carinho 💙💧';
-        if (panelTitle) panelTitle.innerText = 'Automatizar campos 💙';
-      } else {
-        root.style.setProperty('--bg','#fff9fe');
-        root.style.setProperty('--card','#fff');
-        root.style.setProperty('--accent','#7b3bd8');
-        root.style.setProperty('--accent-2','#9b59ff');
-        root.style.setProperty('--muted','#6b6b6b');
-        document.body.style.background = 'linear-gradient(180deg, rgba(123,59,216,0.06), rgba(155,89,255,0.02))';
-
-        if (logo) logo.innerText = 'BB';
-        if (title) title.innerText = 'Macros — Beleza Brasileira';
-        if (footer) footer.innerText = 'Macros geradas automaticamente — adapte conforme necessidade. 💜🔥';
-        if (panelTitle) panelTitle.innerText = 'Automatizar campos 💜';
+        const reset = document.getElementById('resetNames');
+        if (reset) {
+          reset.addEventListener('click', ()=>{
+            Object.values(fields).forEach(i=>{ if (i) i.value=''; });
+            render();
+          });
+        }
       }
-      renderAllMacros();
-      attachCopyHandlers();
-    }
 
-    // inputs -> rerender
-    function attachInputs() {
-      fields.nome   = document.getElementById('nomeInput');
-      fields.codigo = document.getElementById('codigoInput');
-      fields.link   = document.getElementById('linkInput');
-      fields.data   = document.getElementById('dataInput');
-
-      Object.values(fields).forEach(input => {
-        if (!input) return;
-        input.addEventListener('input', renderAllMacros);
-      });
-
-      const resetBtn = document.getElementById('resetNames');
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          Object.values(fields).forEach(i => { if (i) i.value = ''; });
-          renderAllMacros();
+      // Toggle de tema
+      function setupThemeToggle(){
+        const themeSwitch = document.getElementById('themeSwitch');
+        if (!themeSwitch) return;
+        themeSwitch.addEventListener('change', ()=>{
+          isHidratei = themeSwitch.checked;
+          applyTheme();
         });
       }
-    }
 
-    // init robusto
-    function initAll() {
-      if (!document.getElementById('panelTitle')) {
-        const h4 = document.createElement('h4');
-        h4.id = 'panelTitle';
-        h4.innerText = 'Automatizar campos 💜';
-        document.getElementById('auto-panel')?.prepend(h4);
+      // Init robusto
+      function init(){
+        initTemplates();
+        setupInputs();
+        setupCopyDelegation();
+        setupThemeToggle();
+        applyTheme();
       }
-      initTemplates();
-      attachInputs();
-      attachThemeToggle();
-      applyTheme();
-    }
 
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', initAll);
-    } else {
-      initAll();
-    }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
   </script>
 </body>
 </html>
