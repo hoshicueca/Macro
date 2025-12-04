@@ -30,11 +30,14 @@
     .meta{display:flex;gap:8px;align-items:center;margin-top:10px}
     .btn{ background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;border:0;cursor:pointer; font-weight:600;font-size:13px;box-shadow:0 8px 20px rgba(123,59,216,0.12); transition:background 0.4s ease; }
     .note{color:var(--muted);font-size:13px}
+
+    /* Painel de automação */
     #auto-panel{ position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 1px solid rgba(123,59,216,0.15); border-radius: 14px; box-shadow: 0 6px 24px rgba(123,59,216,0.18); padding: 14px; z-index: 9999; width: 280px; transition:all 0.4s ease; }
     #auto-panel h4{ margin:0 0 8px 0; color:var(--accent); font-size:14px; }
     #auto-panel label{ font-size:13px; color:var(--muted); display:block; margin-top:8px;}
     #auto-panel input{ width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid rgba(123,59,216,0.3); font-size:14px; }
     #auto-panel button{ margin-top:10px;width:100%;padding:8px;border-radius:8px;border:none; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(123,59,216,0.25); }
+
     .theme-toggle { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); }
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
     .switch input {opacity: 0;width: 0;height: 0;}
@@ -111,4 +114,233 @@ Qualquer dúvida ou necessidade, estamos à disposição! 🙏</pre>
         <!-- Macro 4 -->
         <section class="card">
           <h2>Pedido Cancelado 💜</h2>
-          <pre class="macro">Oi [Nome da cliente], tudo
+          <pre class="macro">Oi [Nome da cliente], tudo bem? 💜
+Passando para avisar que seu pedido foi cancelado.
+Se quiser, podemos te ajudar a refazer a compra ou entender o que houve 💜
+Qualquer coisa, estamos por aqui! 🙏</pre>
+          <div class="meta">
+            <button class="btn" data-action="copy">💜 Copiar</button>
+            <div class="note">Use quando o pedido foi cancelado.</div>
+          </div>
+        </section>
+
+        <!-- Macro 5 -->
+        <section class="card">
+          <h2>Rastreio pela Loggi 💜</h2>
+          <pre class="macro">Ei, tudo bem? Está tudo certo com seu pedido!
+Você pode acompanhar o andamento da entrega pelo link abaixo:
+📦 Código de rastreio: **[CÓDIGO_DE_RASTREIO]**
+🔗 Site da transportadora: https://www.loggi.com/rastreador/
+O prazo de entrega é de 3 a 5 dias úteis, e assim que houver atualizações no rastreio, você conseguirá acompanhar por lá. 💜
+Seguimos à disposição para o que precisar! 😉</pre>
+          <div class="meta">
+            <button class="btn" data-action="copy">💜 Copiar</button>
+            <div class="note">Use para pedidos com entrega via Loggi.</div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer id="footer">Macros geradas automaticamente — adapte conforme necessidade. 💜🔥</footer>
+  </div>
+
+  <!-- Painel de automação -->
+  <div id="auto-panel">
+    <h4 id="panelTitle">Automatizar campos 💜</h4>
+    <label for="nomeInput">Nome da cliente:</label>
+    <input type="text" id="nomeInput" placeholder="Ex: Juliana">
+    <label for="codigoInput">Código de rastreio:</label>
+    <input type="text" id="codigoInput" placeholder="Ex: LX123456789BR">
+    <label for="linkInput">Link de rastreio:</label>
+    <input type="text" id="linkInput" placeholder="Ex: https://...">
+    <label for="dataInput">Data prevista:</label>
+    <input type="text" id="dataInput" placeholder="Ex: 05/11/2025">
+    <button id="resetNames">Restaurar textos</button>
+  </div>
+
+  <script>
+    // --- estado e templates ---
+    const originalTemplates = {}; // id -> template com placeholders (base: Beleza Brasileira)
+    let isHidratei = false; // false = Beleza Brasileira; true = Hidratei
+
+    // emoji maps
+    const emojiMap = {
+      bb_to_h: { '💜': '💙', '🔥': '💧' },
+      h_to_bb: { '💙': '💜', '💧': '🔥' }
+    };
+
+    // placeholders inputs
+    const fields = {
+      nome: document.getElementById('nomeInput'),
+      codigo: document.getElementById('codigoInput'),
+      link: document.getElementById('linkInput'),
+      data: document.getElementById('dataInput')
+    };
+
+    // assign ids to macros and capture original template
+    function initTemplates() {
+      document.querySelectorAll('pre.macro').forEach((pre, idx) => {
+        if (!pre.id) pre.id = 'macro-' + idx + '-' + Math.random().toString(36).slice(2,8);
+        // store as base template only once
+        if (!originalTemplates[pre.id]) originalTemplates[pre.id] = pre.innerText;
+      });
+    }
+
+    // apply placeholder replacements to a template
+    function fillPlaceholders(template) {
+      let text = template;
+      const nome = fields.nome.value.trim();
+      const codigo = fields.codigo.value.trim();
+      const link = fields.link.value.trim();
+      const data = fields.data.value.trim();
+      if (nome) text = text.replace(/
+
+\[Nome da cliente\]
+
+|
+
+\[Nome\]
+
+/gi, nome);
+      if (codigo) text = text.replace(/
+
+\[CÓDIGO_DE_RASTREIO\]
+
+/gi, codigo);
+      if (link) text = text.replace(/
+
+\[LINK_DE_RASTREIO\]
+
+/gi, link);
+      if (data) text = text.replace(/
+
+\[DATA_PREVISTA\]
+
+/gi, data);
+      return text;
+    }
+
+    // apply emoji mapping to text according to current theme
+    function applyEmojiMapping(text) {
+      if (isHidratei) {
+        return text.replace(/💜/g, '💙').replace(/🔥/g, '💧');
+      } else {
+        return text.replace(/💙/g, '💜').replace(/💧/g, '🔥');
+      }
+    }
+
+    // render all macros based on original template + placeholders + emoji map
+    function renderAllMacros() {
+      document.querySelectorAll('pre.macro').forEach(pre => {
+        const template = originalTemplates[pre.id] ?? pre.innerText;
+        const filled = fillPlaceholders(template);
+        pre.innerText = applyEmojiMapping(filled);
+      });
+      // also update card titles, buttons, footer and panel
+      document.querySelectorAll('.card h2').forEach(h => {
+        h.innerHTML = applyEmojiMapping(h.textContent);
+      });
+      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
+        btn.innerHTML = applyEmojiMapping(btn.textContent);
+      });
+      document.getElementById('footer').innerText = applyEmojiMapping(document.getElementById('footer').textContent);
+      document.getElementById('panelTitle').innerText = applyEmojiMapping(document.getElementById('panelTitle').textContent);
+      document.getElementById('subtitle').innerText = isHidratei ? 'Mensagens automáticas com tom leve e refrescante 💙💧' : 'Coleção organizada de mensagens prontas para Zendesk & WhatsApp — tom: carinhoso, acolhedor 💜🔥';
+    }
+
+    // copy handler - copies the macro text related to the clicked button
+    function attachCopyHandlers() {
+      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
+        // remove existing listener to avoid duplicates
+        btn.replaceWith(btn.cloneNode(true));
+      });
+      document.querySelectorAll('.btn[data-action="copy"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          // find closest card and the macro inside it
+          const card = btn.closest('.card');
+          if (!card) return;
+          const pre = card.querySelector('pre.macro');
+          if (!pre) return;
+          navigator.clipboard.writeText(pre.innerText).then(()=>{
+            const old = btn.innerText;
+            btn.innerText = 'Copiado ✅';
+            setTimeout(()=>{ renderAllMacros(); }, 900);
+          }).catch(()=>{
+            alert('Erro ao copiar — permita acesso à área de transferência.');
+          });
+        });
+      });
+    }
+
+    // theme toggle
+    const themeSwitch = document.getElementById('themeSwitch');
+    themeSwitch.addEventListener('change', () => {
+      isHidratei = themeSwitch.checked;
+      applyTheme();
+    });
+
+    function applyTheme() {
+      const root = document.documentElement;
+      const logo = document.getElementById('logo');
+      const title = document.getElementById('title');
+      const subtitle = document.getElementById('subtitle');
+      const footer = document.getElementById('footer');
+      const panelTitle = document.getElementById('panelTitle');
+
+      if (isHidratei) {
+        root.style.setProperty('--bg','#f0f8ff');
+        root.style.setProperty('--card','#ffffff');
+        root.style.setProperty('--accent','#2196f3');
+        root.style.setProperty('--accent-2','#1976d2');
+        root.style.setProperty('--muted','#444');
+        document.body.style.background = 'linear-gradient(180deg, rgba(33,150,243,0.08), rgba(25,118,210,0.03))';
+
+        logo.innerText = 'H';
+        title.innerText = 'Macros — Hidratei';
+        footer.innerText = 'Macros Hidratei — use com carinho 💙💧';
+        panelTitle.innerText = 'Automatizar campos 💙';
+      } else {
+        root.style.setProperty('--bg','#fff9fe');
+        root.style.setProperty('--card','#fff');
+        root.style.setProperty('--accent','#7b3bd8');
+        root.style.setProperty('--accent-2','#9b59ff');
+        root.style.setProperty('--muted','#6b6b6b');
+        document.body.style.background = 'linear-gradient(180deg, rgba(123,59,216,0.06), rgba(155,89,255,0.02))';
+
+        logo.innerText = 'BB';
+        title.innerText = 'Macros — Beleza Brasileira';
+        footer.innerText = 'Macros geradas automaticamente — adapte conforme necessidade. 💜🔥';
+        panelTitle.innerText = 'Automatizar campos 💜';
+      }
+      renderAllMacros();
+      attachCopyHandlers();
+    }
+
+    // inputs -> rerender
+    Object.values(fields).forEach(input => {
+      input.addEventListener('input', () => {
+        renderAllMacros();
+      });
+    });
+
+    // reset button
+    document.getElementById('resetNames').addEventListener('click', () => {
+      Object.values(fields).forEach(i => i.value = '');
+      renderAllMacros();
+    });
+
+    // initialize everything on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initTemplates();
+      if (!document.getElementById('panelTitle')) {
+        const h4 = document.createElement('h4');
+        h4.id = 'panelTitle';
+        h4.innerText = 'Automatizar campos 💜';
+        document.getElementById('auto-panel').prepend(h4);
+      }
+      applyTheme(); // renders macros and attach handlers
+    });
+  </script>
+</body>
+</html>
